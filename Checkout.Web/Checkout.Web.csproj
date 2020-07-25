@@ -14,4 +14,12 @@
     <Folder Include="Views\Users\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="App.Metrics" Version="4.1.0" />
+    <PackageReference Include="App.Metrics.AspNetCore.All" Version="4.1.0" />
+    <PackageReference Include="App.Metrics.AspNetCore.Mvc" Version="4.1.0" />
+    <PackageReference Include="App.Metrics.Reporting.Console" Version="4.1.0" />
+    <PackageReference Include="App.Metrics.Reporting.TextFile" Version="4.1.0" />
+  </ItemGroup>
+
 </Project>

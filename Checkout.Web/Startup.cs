@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using App.Metrics;
+using App.Metrics.Filtering;
+using App.Metrics.Formatters.Json;
 using Checkout.Ioc;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -33,7 +36,23 @@ namespace Checkout.Web
             //});
 
             services.ConfigureIOC(); //  Register IOC
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
+
+            var filter = new MetricsFilter().WhereType(MetricType.Timer);
+            var metrics = new MetricsBuilder()
+                .Report.ToTextFile(
+                    options => {
+                        options.MetricsOutputFormatter = new MetricsJsonOutputFormatter();
+                        options.AppendMetricsToTextFile = true;
+                        options.Filter = filter;
+                        options.FlushInterval = TimeSpan.FromSeconds(20);
+                        options.OutputPathAndFileName = @"C:\Users\ihaab\Desktop\metrics.txt";
+                    })
+                .Build();
+
+            services.AddMetrics(metrics);
+            services.AddMetricsReportingHostedService();
+
+            services.AddMvc().AddMetrics().SetCompatibilityVersion(CompatibilityVersion.Latest);
             //services.AddControllersWithViews();
         }
 
@@ -46,7 +65,7 @@ namespace Checkout.Web
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler(" / Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
