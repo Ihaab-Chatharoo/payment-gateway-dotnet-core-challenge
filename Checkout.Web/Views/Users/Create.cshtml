@@ -54,7 +54,7 @@
                 <span asp-validation-for="CardNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ExpiryDate" class="control-label">Expiry Date</label>
+                <label asp-for="ExpiryDate" class="control-label">Expiry Date (MM/YY)</label>
                 <input asp-for="ExpiryDate" class="form-control" id="startDate" autocomplete="off"/>
                 <span asp-validation-for="ExpiryDate" class="text-danger"></span>
             </div>
@@ -84,6 +84,4 @@
 </div>
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-
-<ej-date-picker id="startDate" value="DateTime.Now"></ej-date-picker>
 }

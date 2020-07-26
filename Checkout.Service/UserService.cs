@@ -20,21 +20,29 @@ namespace Checkout.Service
             try
             {
                 var obj = new TblUser();
-                obj.Id = Guid.NewGuid();
-                obj.FirstName = userDetails.FirstName;
-                obj.LastName = userDetails.LastName;
-                obj.PhoneNumber = userDetails.PhoneNumber;
-                obj.Address = userDetails.Address;
-                obj.Country = userDetails.Country;
-                obj.City = userDetails.City;
-                obj.ZipCode = userDetails.ZipCode;
-                obj.CardNumber = userDetails.CardNumber;
-                obj.ExpiryDate = userDetails.ExpiryDate;
-                obj.Cvv = userDetails.Cvv;
-                obj.Currency = userDetails.Currency;
-                obj.Amount = userDetails.Amount;
-                var result = await _userRepository.Add(obj);
-                return result;
+                if(obj.CardNumber == "4568789469325478" && obj.ExpiryDate == "08/25" && obj.Cvv == "123")
+                {
+                    obj.Id = Guid.NewGuid();
+                    obj.FirstName = userDetails.FirstName;
+                    obj.LastName = userDetails.LastName;
+                    obj.PhoneNumber = userDetails.PhoneNumber;
+                    obj.Address = userDetails.Address;
+                    obj.Country = userDetails.Country;
+                    obj.City = userDetails.City;
+                    obj.ZipCode = userDetails.ZipCode;
+                    obj.CardNumber = userDetails.CardNumber;
+                    obj.ExpiryDate = userDetails.ExpiryDate;
+                    obj.Cvv = userDetails.Cvv;
+                    obj.Currency = userDetails.Currency;
+                    obj.Amount = userDetails.Amount;
+                    var result = await _userRepository.Add(obj);
+                    return result;
+                }
+                else
+                {
+                    return false;
+                }
+                
             }
             catch (Exception ex)
             {
@@ -62,7 +70,8 @@ namespace Checkout.Service
                     CardNumber = item.CardNumber,
                     ExpiryDate = item.ExpiryDate,
                     Cvv = item.Cvv,
-                    Currency = item.Currency
+                    Currency = item.Currency,
+                    Amount = item.Amount
             });
             }
             return userList;
@@ -84,6 +93,7 @@ namespace Checkout.Service
             userDetails.ExpiryDate = result.ExpiryDate;
             userDetails.Cvv = result.Cvv;
             userDetails.Currency = result.Currency;
+            userDetails.Amount = result.Amount;
             return userDetails;
         }
     }
