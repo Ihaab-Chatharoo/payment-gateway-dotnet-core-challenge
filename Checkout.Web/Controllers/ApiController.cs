@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Checkout.Repository.DB;
+using Microsoft.Extensions.Logging;
 
 namespace Checkout.Web.Controllers
 {
@@ -16,9 +17,13 @@ namespace Checkout.Web.Controllers
     {
         private readonly GatewayDBContext _context;
 
-        public ApiController(GatewayDBContext context)
+        private readonly ILogger<ApiController> _logger;
+
+        public ApiController(GatewayDBContext context, ILogger<ApiController> logger)
         {
             _context = context;
+
+            _logger = logger;
         }
 
         // Displays the list of all previous payments processed through the payment gateway
@@ -26,6 +31,7 @@ namespace Checkout.Web.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TblUser>>> GetTblUser()
         {
+            _logger.LogInformation("Lists of all previous payments");
             return await _context.TblUser.ToListAsync();
         }
 
@@ -38,9 +44,11 @@ namespace Checkout.Web.Controllers
 
             if (tblUser == null)
             {
+                _logger.LogError("The chosen payment ID does not exist in the database");
                 return NotFound();
             }
 
+            _logger.LogInformation("List of chosen payment details");
             return tblUser;
         }
 
@@ -64,6 +72,7 @@ namespace Checkout.Web.Controllers
                     {
                         if (TblUserExists(tblUser.Id))
                         {
+                            _logger.LogWarning("Tried to create duplicate payment as payment ID already exists");
                             return Conflict();
                         }
                         else
@@ -72,15 +81,18 @@ namespace Checkout.Web.Controllers
                         }
                     }
 
+                    _logger.LogInformation("New payment has been successfully processed through the payment gateway");
                     return CreatedAtAction("GetTblUser", new { id = tblUser.Id }, tblUser);
                 }
                 else
                 {
+                    _logger.LogWarning("Transaction could not be processed! There are insufficient funds in the bank account.");
                     return BadRequest(new { message = "Transaction could not be processed! There are insufficient funds in the bank account." });
                 }
             }
             else
             {
+                _logger.LogWarning("Card details entered are incorrect");
                 return BadRequest(new { message = "Card details entered are incorrect" });
             }
             

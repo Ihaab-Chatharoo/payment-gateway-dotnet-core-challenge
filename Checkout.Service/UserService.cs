@@ -1,6 +1,7 @@
 ﻿using Checkout.Infrastructure;
 using Checkout.Repository;
 using Checkout.Repository.DB;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,9 +11,13 @@ namespace Checkout.Service
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-        public UserService(IUserRepository userRepository)
+
+        private readonly ILogger<UserService> _logger;
+        public UserService(IUserRepository userRepository, ILogger<UserService> logger)
         {
             _userRepository = userRepository;
+
+            _logger = logger;
         }
 
         // Creating a new payment through the payment gateway
@@ -41,22 +46,26 @@ namespace Checkout.Service
                         obj.Currency = userDetails.Currency;
                         obj.Amount = userDetails.Amount;
                         var result = await _userRepository.Add(obj);
+
+                        _logger.LogInformation("New payment has been successfully processed through the payment gateway");
                         return result;
                     }
                     else
                     {
+                        _logger.LogWarning("Transaction could not be processed! There are insufficient funds in the bank account.");
                         return false;
                     }
                 }
                 else
                 {
+                    _logger.LogWarning("Card details entered are incorrect");
                     return false;
                 }
                 
             }
             catch (Exception ex)
             {
-
+                _logger.LogWarning(ex.ToString());
                 return false;
             }
         }
@@ -85,6 +94,8 @@ namespace Checkout.Service
                     Amount = item.Amount
             });
             }
+
+            _logger.LogInformation("Lists of all previous payments");
             return userList;
         }
 
@@ -106,6 +117,8 @@ namespace Checkout.Service
             userDetails.Cvv = result.Cvv;
             userDetails.Currency = result.Currency;
             userDetails.Amount = result.Amount;
+
+            _logger.LogInformation("List of chosen payment details");
             return userDetails;
         }
     }
