@@ -9,6 +9,7 @@ using Checkout.Repository.DB;
 
 namespace Checkout.Web.Controllers
 {
+    // ApiController to be used with Postman to get or post results of the Web Api
     [Route("api/[controller]")]
     [ApiController]
     public class ApiController : ControllerBase
@@ -20,6 +21,7 @@ namespace Checkout.Web.Controllers
             _context = context;
         }
 
+        // Displays the list of all previous payments processed through the payment gateway
         // GET: api/Api
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TblUser>>> GetTblUser()
@@ -27,6 +29,7 @@ namespace Checkout.Web.Controllers
             return await _context.TblUser.ToListAsync();
         }
 
+        // Displays the list of a specific previous payment processed through the payment gateway based on the ID inserted
         // GET: api/Api/5
         [HttpGet("{id}")]
         public async Task<ActionResult<TblUser>> GetTblUser(Guid id)
@@ -41,32 +44,40 @@ namespace Checkout.Web.Controllers
             return tblUser;
         }
 
+        // Process a payment through the payment gateway
         // POST: api/Api
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
         public async Task<ActionResult<TblUser>> PostTblUser(TblUser tblUser)
         {
-            if (tblUser.CardNumber == "4568789469325478" && tblUser.ExpiryDate == "08/25" && tblUser.Cvv == "123")
+            // If statement to accept only these card details to test the bank part of the API and accepts only Rupees or Dollars as payment currency
+            if ((tblUser.CardNumber == "4568789469325478" && tblUser.ExpiryDate == "08/25" && tblUser.Cvv == "123") && (tblUser.Currency == "Rupees" || tblUser.Currency == "Dollars"))
             {
-                _context.TblUser.Add(tblUser);
-                try
+                // Adds a maximum amount that can be processed using the card based on the 2 different currencies used (acts as the amount of money available on the bank account)
+                if ((tblUser.Currency == "Rupees" && tblUser.Amount <= 999) || (tblUser.Currency == "Dollars" && tblUser.Amount <= 500))
                 {
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateException)
-                {
-                    if (TblUserExists(tblUser.Id))
+                    _context.TblUser.Add(tblUser);
+                    try
                     {
-                        return Conflict();
+                        await _context.SaveChangesAsync();
                     }
-                    else
+                    catch (DbUpdateException)
                     {
-                        throw;
+                        if (TblUserExists(tblUser.Id))
+                        {
+                            return Conflict();
+                        }
+                        else
+                        {
+                            throw;
+                        }
                     }
-                }
 
-                return CreatedAtAction("GetTblUser", new { id = tblUser.Id }, tblUser);
+                    return CreatedAtAction("GetTblUser", new { id = tblUser.Id }, tblUser);
+                }
+                else
+                {
+                    return BadRequest(new { message = "Transaction could not be processed! There are insufficient funds in the bank account." });
+                }
             }
             else
             {
@@ -75,6 +86,7 @@ namespace Checkout.Web.Controllers
             
         }
 
+        // Checks if a duplicate payment is not being processed based on the ID
         private bool TblUserExists(Guid id)
         {
             return _context.TblUser.Any(e => e.Id == id);
