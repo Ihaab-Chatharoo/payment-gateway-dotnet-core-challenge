@@ -33,8 +33,8 @@ namespace Checkout.Test
                 Country = "Mauritius",
                 City = "Quatre Bornes",
                 ZipCode = "123456",
-                CardNumber = "4444789632548521",
-                ExpiryDate = "01/24",
+                CardNumber = "4568789469325478",
+                ExpiryDate = "08/25",
                 Cvv = "123",
                 Currency = "Rupees",
                 Amount = 500
