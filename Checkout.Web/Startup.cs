@@ -1,14 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using App.Metrics;
 using App.Metrics.Filtering;
 using App.Metrics.Formatters.Json;
 using Checkout.Ioc;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,7 +36,8 @@ namespace Checkout.Web
             var filter = new MetricsFilter().WhereType(MetricType.Timer);
             var metrics = new MetricsBuilder()
                 .Report.ToTextFile(
-                    options => {
+                    options =>
+                    {
                         options.MetricsOutputFormatter = new MetricsJsonOutputFormatter();
                         options.AppendMetricsToTextFile = true;
                         options.Filter = filter;
