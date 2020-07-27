@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Checkout.Repository.DB;
@@ -95,7 +94,7 @@ namespace Checkout.Web.Controllers
                 _logger.LogWarning("Card details entered are incorrect");
                 return BadRequest(new { message = "Card details entered are incorrect" });
             }
-            
+
         }
 
         // Checks if a duplicate payment is not being processed based on the ID

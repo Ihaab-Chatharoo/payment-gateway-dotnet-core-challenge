@@ -61,7 +61,7 @@ namespace Checkout.Service
                     _logger.LogWarning("Card details entered are incorrect");
                     return false;
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -92,7 +92,7 @@ namespace Checkout.Service
                     Cvv = item.Cvv,
                     Currency = item.Currency,
                     Amount = item.Amount
-            });
+                });
             }
 
             _logger.LogInformation("Lists of all previous payments");
